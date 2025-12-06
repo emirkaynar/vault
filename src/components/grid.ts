@@ -23,8 +23,87 @@ export class GridComponent extends LitElement {
   @state()
   private assets: Asset[] = [];
 
+  @state()
+  private currentFilters = {
+    resolution: [] as string[],
+    aspectRatio: [] as string[],
+    sortBy: 'newest'
+  };
+
   private dbService = new IndexedDbService();
   private collections: { [key: string]: Asset[] } = {};
+  private imageObserver: IntersectionObserver | null = null;
+
+  connectedCallback() {
+    super.connectedCallback();
+    window.addEventListener('vault-filter-change', this.handleFilterChange.bind(this) as EventListener);
+    this.loadFilters();
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    window.removeEventListener('vault-filter-change', this.handleFilterChange.bind(this) as EventListener);
+    if (this.imageObserver) {
+      this.imageObserver.disconnect();
+    }
+  }
+
+  private handleFilterChange(e: CustomEvent) {
+    this.currentFilters = e.detail;
+    this.requestUpdate(); // Ensure re-render
+  }
+
+  private loadFilters() {
+    const stored = sessionStorage.getItem('selectedValues');
+    if (stored) {
+      this.currentFilters = JSON.parse(stored);
+    }
+  }
+
+  private getFilteredAssets(): Asset[] {
+    let filtered = [...this.assets];
+
+    // Filter by Resolution
+    if (this.currentFilters.resolution && this.currentFilters.resolution.length > 0) {
+      filtered = filtered.filter(a => {
+        // Always include horizontal assets in resolution check as they have custom resolutions
+        if (a.attributes?.includes('horizontal')) return true;
+        return this.currentFilters.resolution.includes(a.resolution);
+      });
+    }
+
+    // Filter by Aspect Ratio
+    if (this.currentFilters.aspectRatio && this.currentFilters.aspectRatio.length > 0) {
+      filtered = filtered.filter(a => {
+        const isHorizontal = a.attributes?.includes('horizontal');
+        const showVertical = this.currentFilters.aspectRatio.includes('2:3');
+        const showHorizontal = this.currentFilters.aspectRatio.includes('92:43');
+
+        if (showVertical && showHorizontal) return true;
+        if (showVertical) return !isHorizontal;
+        if (showHorizontal) return isHorizontal;
+        return false;
+      });
+    }
+
+    // Sort
+    filtered.sort((a, b) => {
+      switch (this.currentFilters.sortBy) {
+        case 'newest':
+          return b.id - a.id;
+        case 'oldest':
+          return a.id - b.id;
+        case 'nameasc':
+          return a.title.localeCompare(b.title);
+        case 'namedesc':
+          return b.title.localeCompare(a.title);
+        default:
+          return 0;
+      }
+    });
+
+    return filtered;
+  }
 
   static styles = css`
     @keyframes fadeIn {
@@ -311,38 +390,37 @@ export class GridComponent extends LitElement {
 
 private lastFocusedElement: HTMLElement | null = null;
 
-private collectionsCollector(assets: Asset[]) {
-  const collections: { [key: string]: Asset[] } = {};
-  const browseCollection: Asset[] = [];
+  private collectionsCollector(assets: Asset[]) {
+    const collections: { [key: string]: Asset[] } = {};
+    const browseCollection: Asset[] = [];
 
-  for (let i = assets.length - 1; i >= 0; i--) {
-    const asset = assets[i];
-    let addedToCollection = false;
+    for (let i = 0; i < assets.length; i++) {
+      const asset = assets[i];
+      let addedToCollection = false;
 
-    for (const tag of asset.tags) {
-      if (tag.startsWith('collection:')) {
-        const collectionName = tag.substring(11) || 'default';
-        if (!collections[collectionName]) {
-          collections[collectionName] = [];
+      for (const tag of asset.tags) {
+        if (tag.startsWith('collection:')) {
+          const collectionName = tag.substring(11) || 'default';
+          if (!collections[collectionName]) {
+            collections[collectionName] = [];
+          }
+          collections[collectionName].push(asset);
+          addedToCollection = true;
+          break;
         }
-        collections[collectionName].push(asset);
-        addedToCollection = true;
-        break;
+      }
+
+      if (!addedToCollection) {
+        browseCollection.push(asset);
       }
     }
 
-    if (!addedToCollection) {
-      browseCollection.push(asset);
+    if (browseCollection.length > 0) {
+      collections['browse'] = browseCollection;
     }
+
+    this.collections = collections;
   }
-
-  if (browseCollection.length > 0) {
-    collections['browse'] = browseCollection;
-  }
-
-  this.collections = collections;
-}
-
   private readonly OVERLAY_SELECTORS = {
     overlay: '.overlay',
     image: '.overlay img',
@@ -519,27 +597,34 @@ private collectionsCollector(assets: Asset[]) {
 
   private lazyLoadImages() {
     const images = this.shadowRoot?.querySelectorAll('img[data-src]');
-    if (images) {
-      const observer = new IntersectionObserver((entries, observer) => {
+    
+    if (this.imageObserver) {
+      this.imageObserver.disconnect();
+    }
+
+    if (images && images.length > 0) {
+      this.imageObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             const img = entry.target as HTMLImageElement;
-            img.style.opacity = '0';
-            img.src = img.dataset.src!;
-            img.onload = () => {
-              img.style.transition = 'opacity 0.3s ease-in-out';
-              img.style.opacity = '1';
-              img.classList.add('loaded');
-            };
-            img.removeAttribute('data-src');
-            observer.unobserve(img);
+            if (img.dataset.src) {
+              img.style.opacity = '0';
+              img.src = img.dataset.src!;
+              img.onload = () => {
+                img.style.transition = 'opacity 0.3s ease-in-out';
+                img.style.opacity = '1';
+                img.classList.add('loaded');
+              };
+              img.removeAttribute('data-src');
+              observer.unobserve(img);
+            }
           }
         });
       }, {
         rootMargin: '10% 0px'
       });
 
-      images.forEach(img => observer.observe(img));
+      images.forEach(img => this.imageObserver!.observe(img));
     }
   }
 
@@ -648,7 +733,12 @@ private collectionsCollector(assets: Asset[]) {
   }
 
     render() {
-      this.collectionsCollector(this.assets);
+      const filteredAssets = this.getFilteredAssets();
+      this.collectionsCollector(filteredAssets);
+
+      if (this.assets.length > 0 && !this.collections[this.collectionRenderer]) {
+        this.collections[this.collectionRenderer] = [];
+      }
   
       if (!this.collections[this.collectionRenderer]) {
         return html`

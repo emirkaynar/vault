@@ -570,6 +570,9 @@ export class ToolbarComponent extends LitElement {
 			"selectedValues",
 			JSON.stringify(this.selectedValues)
 		);
+		window.dispatchEvent(new CustomEvent('vault-filter-change', { 
+			detail: this.selectedValues 
+		}));
 	}
 
 	handleRadioSelect(value: string) {
@@ -581,6 +584,9 @@ export class ToolbarComponent extends LitElement {
 			"selectedValues",
 			JSON.stringify(this.selectedValues)
 		);
+		window.dispatchEvent(new CustomEvent('vault-filter-change', { 
+			detail: this.selectedValues 
+		}));
 	}
 
 	firstUpdated() {
