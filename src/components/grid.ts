@@ -65,11 +65,7 @@ export class GridComponent extends LitElement {
 
     // Filter by Resolution
     if (this.currentFilters.resolution && this.currentFilters.resolution.length > 0) {
-      filtered = filtered.filter(a => {
-        // Always include horizontal assets in resolution check as they have custom resolutions
-        if (a.attributes?.includes('horizontal')) return true;
-        return this.currentFilters.resolution.includes(a.resolution);
-      });
+      filtered = filtered.filter(a => this.currentFilters.resolution.includes(a.resolution));
     }
 
     // Filter by Aspect Ratio

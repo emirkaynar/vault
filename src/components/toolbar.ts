@@ -24,6 +24,7 @@ export class ToolbarComponent extends LitElement {
 			"1000x1500",
 			"1200x1800",
 			"1440x2160",
+			"1840x860",
 			"1843x2763",
 			"2280x3420",
 		] as string[],
@@ -36,6 +37,7 @@ export class ToolbarComponent extends LitElement {
 		{ value: "1000x1500", label: "1000x1500" },
 		{ value: "1200x1800", label: "1200x1800" },
 		{ value: "1440x2160", label: "1440x2160" },
+		{ value: "1840x860", label: "1840x860" },
 		{ value: "1843x2763", label: "1843x2763" },
 		{ value: "2280x3420", label: "2280x3420" },
 	];
@@ -653,7 +655,7 @@ export class ToolbarComponent extends LitElement {
 					<span
 						>Resolution${this.selectedValues.resolution.length > 0
 							? html`<br /><span class="selections">
-										${this.selectedValues.resolution.length === 5
+										${this.selectedValues.resolution.length === 6
 											? "All"
 											: this.selectedValues.resolution.length + " selected"}
 									</span>`
