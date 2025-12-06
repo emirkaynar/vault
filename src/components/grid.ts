@@ -30,27 +30,56 @@ export class GridComponent extends LitElement {
     sortBy: 'newest'
   };
 
+  @state()
+  private isSorting = false;
+
   private dbService = new IndexedDbService();
   private collections: { [key: string]: Asset[] } = {};
   private imageObserver: IntersectionObserver | null = null;
+  
+  // Create a stable reference for the event listener to ensure it can be removed
+  private filterListener = (e: Event) => this.handleFilterChange(e as CustomEvent);
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener('vault-filter-change', this.handleFilterChange.bind(this) as EventListener);
+    window.addEventListener('vault-filter-change', this.filterListener);
     this.loadFilters();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener('vault-filter-change', this.handleFilterChange.bind(this) as EventListener);
+    window.removeEventListener('vault-filter-change', this.filterListener);
     if (this.imageObserver) {
       this.imageObserver.disconnect();
     }
   }
 
-  private handleFilterChange(e: CustomEvent) {
-    this.currentFilters = e.detail;
-    this.requestUpdate(); // Ensure re-render
+  private async handleFilterChange(e: CustomEvent) {
+    const newFilters = e.detail;
+    const isSortChange = newFilters.sortBy !== this.currentFilters.sortBy;
+
+    // Fallback for browsers without View Transitions
+    if (!('startViewTransition' in document)) {
+      this.currentFilters = newFilters;
+      return;
+    }
+
+    if (isSortChange) {
+      this.isSorting = true;
+    }
+
+    const transition = (document as any).startViewTransition(async () => {
+      this.currentFilters = newFilters;
+      await this.updateComplete;
+    });
+
+    await transition.finished;
+
+    if (isSortChange) {
+      this.isSorting = false;
+      // Trigger a silent update to restore names for the next interaction
+      this.requestUpdate();
+    }
   }
 
   private loadFilters() {
@@ -752,6 +781,7 @@ private lastFocusedElement: HTMLElement | null = null;
         <div class="grid">
           ${this.collections[this.collectionRenderer].map((asset) => html`
         <div class="item${asset.attributes ? " " + asset.attributes[0] : ""}" tabindex="0"
+             style="${!this.isSorting ? `view-transition-name: item-${asset.id}` : ''}"
              @mouseenter="${(e: MouseEvent) => this.showInfoPane(e, asset)}"
              @focus="${(e: FocusEvent) => this.showInfoPane(e, asset)}"
              @blur="${this.hideInfoPane}"
