@@ -1,6 +1,6 @@
-import { LitElement, html, css } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
-import { IndexedDbService } from '../modules/indexedDb';
+import { LitElement, html, css } from "lit";
+import { customElement, property, state } from "lit/decorators.js";
+import { IndexedDbService } from "../modules/indexedDb";
 
 interface Asset {
   id: number;
@@ -15,10 +15,10 @@ interface Asset {
   tags: string[];
 }
 
-@customElement('grid-hx')
+@customElement("grid-hx")
 export class GridComponent extends LitElement {
-  @property({ type: String, attribute: 'collection' })
-  collectionRenderer = '';
+  @property({ type: String, attribute: "collection" })
+  collectionRenderer = "";
 
   @state()
   private assets: Asset[] = [];
@@ -27,7 +27,7 @@ export class GridComponent extends LitElement {
   private currentFilters = {
     resolution: [] as string[],
     aspectRatio: [] as string[],
-    sortBy: 'newest'
+    sortBy: "newest",
   };
 
   @state()
@@ -36,19 +36,20 @@ export class GridComponent extends LitElement {
   private dbService = new IndexedDbService();
   private collections: { [key: string]: Asset[] } = {};
   private imageObserver: IntersectionObserver | null = null;
-  
+
   // Create a stable reference for the event listener to ensure it can be removed
-  private filterListener = (e: Event) => this.handleFilterChange(e as CustomEvent);
+  private filterListener = (e: Event) =>
+    this.handleFilterChange(e as CustomEvent);
 
   connectedCallback() {
     super.connectedCallback();
-    window.addEventListener('vault-filter-change', this.filterListener);
+    window.addEventListener("vault-filter-change", this.filterListener);
     this.loadFilters();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    window.removeEventListener('vault-filter-change', this.filterListener);
+    window.removeEventListener("vault-filter-change", this.filterListener);
     if (this.imageObserver) {
       this.imageObserver.disconnect();
     }
@@ -59,7 +60,7 @@ export class GridComponent extends LitElement {
     const isSortChange = newFilters.sortBy !== this.currentFilters.sortBy;
 
     // Fallback for browsers without View Transitions
-    if (!('startViewTransition' in document)) {
+    if (!("startViewTransition" in document)) {
       this.currentFilters = newFilters;
       return;
     }
@@ -83,7 +84,7 @@ export class GridComponent extends LitElement {
   }
 
   private loadFilters() {
-    const stored = sessionStorage.getItem('selectedValues');
+    const stored = sessionStorage.getItem("selectedValues");
     if (stored) {
       this.currentFilters = JSON.parse(stored);
     }
@@ -93,16 +94,25 @@ export class GridComponent extends LitElement {
     let filtered = [...this.assets];
 
     // Filter by Resolution
-    if (this.currentFilters.resolution && this.currentFilters.resolution.length > 0) {
-      filtered = filtered.filter(a => this.currentFilters.resolution.includes(a.resolution));
+    if (
+      this.currentFilters.resolution &&
+      this.currentFilters.resolution.length > 0
+    ) {
+      filtered = filtered.filter((a) =>
+        this.currentFilters.resolution.includes(a.resolution)
+      );
     }
 
     // Filter by Aspect Ratio
-    if (this.currentFilters.aspectRatio && this.currentFilters.aspectRatio.length > 0) {
-      filtered = filtered.filter(a => {
-        const isHorizontal = a.attributes?.includes('horizontal');
-        const showVertical = this.currentFilters.aspectRatio.includes('2:3');
-        const showHorizontal = this.currentFilters.aspectRatio.includes('92:43');
+    if (
+      this.currentFilters.aspectRatio &&
+      this.currentFilters.aspectRatio.length > 0
+    ) {
+      filtered = filtered.filter((a) => {
+        const isHorizontal = a.attributes?.includes("horizontal");
+        const showVertical = this.currentFilters.aspectRatio.includes("2:3");
+        const showHorizontal =
+          this.currentFilters.aspectRatio.includes("92:43");
 
         if (showVertical && showHorizontal) return true;
         if (showVertical) return !isHorizontal;
@@ -114,13 +124,13 @@ export class GridComponent extends LitElement {
     // Sort
     filtered.sort((a, b) => {
       switch (this.currentFilters.sortBy) {
-        case 'newest':
+        case "newest":
           return b.id - a.id;
-        case 'oldest':
+        case "oldest":
           return a.id - b.id;
-        case 'nameasc':
+        case "nameasc":
           return a.title.localeCompare(b.title);
-        case 'namedesc':
+        case "namedesc":
           return b.title.localeCompare(a.title);
         default:
           return 0;
@@ -140,9 +150,9 @@ export class GridComponent extends LitElement {
       }
     }
     .grid {
-      display: grid; 
+      display: grid;
       grid-auto-rows: auto;
-      grid-template-columns: repeat(6, 1fr); 
+      grid-template-columns: repeat(6, 1fr);
       gap: 2rem;
       padding: 0rem 2.5rem 2.5rem;
     }
@@ -232,7 +242,12 @@ export class GridComponent extends LitElement {
     .skeleton {
       opacity: 0;
       background-color: #e0e0e0;
-      background-image: linear-gradient(90deg, var(--hx-background-200), var(--hx-background-300), var(--hx-background-200));
+      background-image: linear-gradient(
+        90deg,
+        var(--hx-background-200),
+        var(--hx-background-300),
+        var(--hx-background-200)
+      );
       background-size: 200% 100%;
       animation: skeleton-loading 1.5s infinite;
       transition: opacity 0.3s ease;
@@ -267,7 +282,7 @@ export class GridComponent extends LitElement {
       opacity: 0;
     }
     .full-overlay a {
-      margin: .5rem;
+      margin: 0.5rem;
     }
     .full-overlay span {
       color: var(--hx-text-100);
@@ -285,9 +300,9 @@ export class GridComponent extends LitElement {
       pointer-events: all;
     }
     .full-overlay > span {
-      margin: .5rem;
+      margin: 0.5rem;
       padding: 4px;
-      font-size: .875rem;
+      font-size: 0.875rem;
     }
     .full-overlay a:hover > span {
       color: var(--hx-text-brand);
@@ -308,10 +323,22 @@ export class GridComponent extends LitElement {
       position: absolute;
       width: 100%;
       height: 100%;
-      background: rgb(10,10,10);
-      background: -moz-linear-gradient(0deg, rgba(10,10,10,1) 0%, rgba(255,0,0,0) 64%);
-      background: -webkit-linear-gradient(0deg, rgba(10,10,10,1) 0%, rgba(255,0,0,0) 64%);
-      background: linear-gradient(0deg, rgba(10,10,10,1) 0%, rgba(255,0,0,0) 64%);
+      background: rgb(10, 10, 10);
+      background: -moz-linear-gradient(
+        0deg,
+        rgba(10, 10, 10, 1) 0%,
+        rgba(255, 0, 0, 0) 64%
+      );
+      background: -webkit-linear-gradient(
+        0deg,
+        rgba(10, 10, 10, 1) 0%,
+        rgba(255, 0, 0, 0) 64%
+      );
+      background: linear-gradient(
+        0deg,
+        rgba(10, 10, 10, 1) 0%,
+        rgba(255, 0, 0, 0) 64%
+      );
       filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#0a0a0a",endColorstr="#ff0000",GradientType=1);
       border-radius: 11px;
       z-index: 10;
@@ -327,10 +354,10 @@ export class GridComponent extends LitElement {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      padding: .5rem 1rem;
+      padding: 0.5rem 1rem;
     }
     #info-pane-top span {
-      font-size: .8rem;
+      font-size: 0.8rem;
       padding: 4px;
       border-radius: 6px;
       color: var(--hx-text-100);
@@ -340,7 +367,7 @@ export class GridComponent extends LitElement {
       border: 1px solid var(--hx-border-200);
       line-height: 1;
     }
-    #info-pane-top a > span{
+    #info-pane-top a > span {
       color: var(--hx-text-100);
       display: flex;
       align-items: center;
@@ -359,7 +386,7 @@ export class GridComponent extends LitElement {
     #info-pane-bottom p {
       color: var(--hx-text-200);
       margin: 0;
-      font-size: .9rem;
+      font-size: 0.9rem;
       font-weight: 500;
     }
     #info-pane-bottom h2 {
@@ -413,7 +440,7 @@ export class GridComponent extends LitElement {
     }
   `;
 
-private lastFocusedElement: HTMLElement | null = null;
+  private lastFocusedElement: HTMLElement | null = null;
 
   private collectionsCollector(assets: Asset[]) {
     const collections: { [key: string]: Asset[] } = {};
@@ -424,8 +451,8 @@ private lastFocusedElement: HTMLElement | null = null;
       let addedToCollection = false;
 
       for (const tag of asset.tags) {
-        if (tag.startsWith('collection:')) {
-          const collectionName = tag.substring(11) || 'default';
+        if (tag.startsWith("collection:")) {
+          const collectionName = tag.substring(11) || "default";
           if (!collections[collectionName]) {
             collections[collectionName] = [];
           }
@@ -441,37 +468,40 @@ private lastFocusedElement: HTMLElement | null = null;
     }
 
     if (browseCollection.length > 0) {
-      collections['browse'] = browseCollection;
+      collections["browse"] = browseCollection;
     }
 
     this.collections = collections;
   }
   private readonly OVERLAY_SELECTORS = {
-    overlay: '.overlay',
-    image: '.overlay img',
-    skeleton: '.skeleton',
-    fullOverlay: '.full-overlay',
-    content: '.overlay .content',
-    download: '.overlay .content a',
-    gridInfo: '#overlay-grid-info'
+    overlay: ".overlay",
+    image: ".overlay img",
+    skeleton: ".skeleton",
+    fullOverlay: ".full-overlay",
+    content: ".overlay .content",
+    download: ".overlay .content a",
+    gridInfo: "#overlay-grid-info",
   } as const;
 
   private readonly ANIMATION_DURATION = 2000;
 
   private showOverlay(src: number, sourceElement?: Element | null) {
     // Cache DOM queries
-    const elements = Object.entries(this.OVERLAY_SELECTORS).reduce((acc, [key, selector]) => ({
-      ...acc,
-      [key]: this.shadowRoot?.querySelector(selector)
-    }), {} as Record<keyof typeof this.OVERLAY_SELECTORS, Element | null>);
+    const elements = Object.entries(this.OVERLAY_SELECTORS).reduce(
+      (acc, [key, selector]) => ({
+        ...acc,
+        [key]: this.shadowRoot?.querySelector(selector),
+      }),
+      {} as Record<keyof typeof this.OVERLAY_SELECTORS, Element | null>
+    );
 
     // Validate all required elements exist
-    if (Object.values(elements).some(el => !el)) {
-      console.error('Required overlay elements not found');
+    if (Object.values(elements).some((el) => !el)) {
+      console.error("Required overlay elements not found");
       return;
     }
 
-    const asset = this.assets.find(asset => asset.id === src);
+    const asset = this.assets.find((asset) => asset.id === src);
     if (!asset) {
       this.constructError(404, src);
       return;
@@ -485,14 +515,14 @@ private lastFocusedElement: HTMLElement | null = null;
       fullOverlay,
       content,
       download,
-      gridInfo
+      gridInfo,
     } = elements as Record<keyof typeof this.OVERLAY_SELECTORS, HTMLElement>;
 
     // Cleanup function for event listeners
     const cleanup = () => {
-      window.removeEventListener('scroll', handleScroll);
-      image.removeEventListener('load', handleImageLoad);
-      image.removeEventListener('error', handleImageError);
+      window.removeEventListener("scroll", handleScroll);
+      image.removeEventListener("load", handleImageLoad);
+      image.removeEventListener("error", handleImageError);
     };
 
     // Event handlers
@@ -502,117 +532,119 @@ private lastFocusedElement: HTMLElement | null = null;
     };
 
     const handleImageLoad = () => {
-      image.classList.add('visible');
-      skeleton.classList.remove('visible');
-      download.setAttribute('href', `/asset/grid/${src}.png`);
+      image.classList.add("visible");
+      skeleton.classList.remove("visible");
+      download.setAttribute("href", `/asset/grid/${src}.png`);
       gridInfo.textContent = asset.resolution;
-      fullOverlay.classList.add('visible');
+      fullOverlay.classList.add("visible");
 
-      const isDesktop = !('ontouchstart' in window);
+      const isDesktop = !("ontouchstart" in window);
 
       if (isDesktop && sourceElement === undefined) {
         const timeout = setTimeout(() => {
-          fullOverlay.classList.remove('visible');
+          fullOverlay.classList.remove("visible");
           clearTimeout(timeout);
         }, this.ANIMATION_DURATION);
       }
     };
 
     const handleImageError = () => {
-      skeleton.classList.remove('visible');
-      fullOverlay.classList.add('invisible');
+      skeleton.classList.remove("visible");
+      fullOverlay.classList.add("invisible");
       this.constructError(404, src);
       cleanup();
     };
 
     try {
       // Reset state
-      (image as HTMLImageElement).src = '';
-      skeleton.classList.add('visible');
-      fullOverlay.classList.remove('visible', 'invisible');
-      content.classList.remove('horizontal');
-      skeleton.classList.remove('horizontal');
+      (image as HTMLImageElement).src = "";
+      skeleton.classList.add("visible");
+      fullOverlay.classList.remove("visible", "invisible");
+      content.classList.remove("horizontal");
+      skeleton.classList.remove("horizontal");
 
       // Handle horizontal layout
-      const isHorizontal = asset.attributes?.includes('horizontal');
+      const isHorizontal = asset.attributes?.includes("horizontal");
       if (isHorizontal) {
-        content.classList.add('horizontal');
-        skeleton.classList.add('horizontal');
+        content.classList.add("horizontal");
+        skeleton.classList.add("horizontal");
       }
 
       // Add event listeners
-      window.addEventListener('scroll', handleScroll, { passive: true });
-      image.addEventListener('load', handleImageLoad, { once: true });
-      image.addEventListener('error', handleImageError, { once: true });
+      window.addEventListener("scroll", handleScroll, { passive: true });
+      image.addEventListener("load", handleImageLoad, { once: true });
+      image.addEventListener("error", handleImageError, { once: true });
 
       // Show overlay and update image
-      overlay.classList.add('visible');
+      overlay.classList.add("visible");
       (image as HTMLImageElement).src = `/asset/grid/${src}.png`;
       window.location.hash = `#preview${src}`;
-      this.lastFocusedElement = sourceElement as HTMLElement || document.activeElement as HTMLElement;
+      this.lastFocusedElement =
+        (sourceElement as HTMLElement) ||
+        (document.activeElement as HTMLElement);
       overlay.focus();
     } catch (error) {
-      console.error('Error showing overlay:', error);
+      console.error("Error showing overlay:", error);
       this.constructError(500, src);
       cleanup();
     }
   }
 
   private hideOverlay() {
-    const overlay = this.shadowRoot?.querySelector('.overlay');
-    const overlayImg = overlay?.querySelector('img');
-    const overlayFull = overlay?.querySelector('.full-overlay');
+    const overlay = this.shadowRoot?.querySelector(".overlay");
+    const overlayImg = overlay?.querySelector("img");
+    const overlayFull = overlay?.querySelector(".full-overlay");
     if (this.lastFocusedElement) {
       this.lastFocusedElement.focus();
     }
     if (overlay) {
-      var prevError = overlay.querySelector('.error-container');
+      var prevError = overlay.querySelector(".error-container");
       if (prevError) {
         prevError.remove();
       }
-      overlay.animate([
-        { opacity: 1 },
-        { opacity: 0 }
-      ], {
+      overlay.animate([{ opacity: 1 }, { opacity: 0 }], {
         duration: 300,
-        easing: 'ease'
+        easing: "ease",
       }).onfinish = () => {
-        overlay.classList.remove('visible');
+        overlay.classList.remove("visible");
       };
-      overlayImg?.classList.remove('visible');
+      overlayImg?.classList.remove("visible");
       if (overlayFull) {
-        const overlayGridInfo = overlayFull.querySelector('#overlay-grid-info');
-        overlayFull.classList.remove('visible');
+        const overlayGridInfo = overlayFull.querySelector("#overlay-grid-info");
+        overlayFull.classList.remove("visible");
         if (overlayGridInfo) {
-          overlayGridInfo.innerHTML = '';
+          overlayGridInfo.innerHTML = "";
         }
       }
     }
-    history.replaceState(null, '', ' ');
+    history.replaceState(null, "", " ");
   }
 
   private handleGridKeydown(e: KeyboardEvent, asset: Asset) {
     const target = e.target as HTMLElement;
-    
-    switch(e.key) {
-      case 'Enter':
+
+    switch (e.key) {
+      case "Enter":
         this.showOverlay(asset.id, e.target as HTMLElement);
         break;
-      case 'ArrowRight':
+      case "ArrowRight":
         e.preventDefault();
         (target.nextElementSibling as HTMLElement)?.focus();
         break;
-      case 'ArrowLeft':
+      case "ArrowLeft":
         e.preventDefault();
         (target.previousElementSibling as HTMLElement)?.focus();
         break;
-      case 'ArrowDown':
-      case 'ArrowUp':
+      case "ArrowDown":
+      case "ArrowUp":
         e.preventDefault();
-        const items = Array.from(this.shadowRoot!.querySelectorAll('.item'));
+        const items = Array.from(this.shadowRoot!.querySelectorAll(".item"));
         const currentIndex = items.indexOf(target);
-        const columns = getComputedStyle(target.parentElement!).gridTemplateColumns.split(' ').length;
-        const nextIndex = currentIndex + (e.key === 'ArrowDown' ? columns : -columns);
+        const columns = getComputedStyle(
+          target.parentElement!
+        ).gridTemplateColumns.split(" ").length;
+        const nextIndex =
+          currentIndex + (e.key === "ArrowDown" ? columns : -columns);
         if (items[nextIndex]) {
           (items[nextIndex] as HTMLElement).focus();
         }
@@ -621,42 +653,45 @@ private lastFocusedElement: HTMLElement | null = null;
   }
 
   private lazyLoadImages() {
-    const images = this.shadowRoot?.querySelectorAll('img[data-src]');
-    
+    const images = this.shadowRoot?.querySelectorAll("img[data-src]");
+
     if (this.imageObserver) {
       this.imageObserver.disconnect();
     }
 
     if (images && images.length > 0) {
-      this.imageObserver = new IntersectionObserver((entries, observer) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            const img = entry.target as HTMLImageElement;
-            if (img.dataset.src) {
-              img.style.opacity = '0';
-              img.src = img.dataset.src!;
-              img.onload = () => {
-                img.style.transition = 'opacity 0.3s ease-in-out';
-                img.style.opacity = '1';
-                img.classList.add('loaded');
-              };
-              img.removeAttribute('data-src');
-              observer.unobserve(img);
+      this.imageObserver = new IntersectionObserver(
+        (entries, observer) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              const img = entry.target as HTMLImageElement;
+              if (img.dataset.src) {
+                img.style.opacity = "0";
+                img.src = img.dataset.src!;
+                img.onload = () => {
+                  img.style.transition = "opacity 0.3s ease-in-out";
+                  img.style.opacity = "1";
+                  img.classList.add("loaded");
+                };
+                img.removeAttribute("data-src");
+                observer.unobserve(img);
+              }
             }
-          }
-        });
-      }, {
-        rootMargin: '10% 0px'
-      });
+          });
+        },
+        {
+          rootMargin: "10% 0px",
+        }
+      );
 
-      images.forEach(img => this.imageObserver!.observe(img));
+      images.forEach((img) => this.imageObserver!.observe(img));
     }
   }
 
   private handleHash() {
     const hash = window.location.hash;
-    if (hash.startsWith('#preview')) {
-      const assetId = parseInt(hash.replace('#preview', ''), 10);
+    if (hash.startsWith("#preview")) {
+      const assetId = parseInt(hash.replace("#preview", ""), 10);
       if (!isNaN(assetId)) {
         this.showOverlay(assetId);
       }
@@ -664,32 +699,33 @@ private lastFocusedElement: HTMLElement | null = null;
   }
 
   private constructError(status: number = 404, src?: number) {
-    const overlay = this.shadowRoot?.querySelector('.overlay');
+    const overlay = this.shadowRoot?.querySelector(".overlay");
     if (overlay) {
-      const errorContainer = document.createElement('div');
-      errorContainer.classList.add('error-container');
+      const errorContainer = document.createElement("div");
+      errorContainer.classList.add("error-container");
 
-      const errorTop = document.createElement('div');
-      errorTop.style.display = 'flex';
-      errorTop.style.justifyContent = 'center';
-      const errorTitle = document.createElement('span');
-      const errorIcon = document.createElement('span');
-      errorIcon.style.marginRight = '8px';
-      errorIcon.innerHTML = '<svg data-testid="geist-icon" height="16" stroke-linejoin="round" viewBox="0 0 16 16" style="color: currentcolor;"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.55846 2H7.44148L1.88975 13.5H14.1102L8.55846 2ZM9.90929 1.34788C9.65902 0.829456 9.13413 0.5 8.55846 0.5H7.44148C6.86581 0.5 6.34092 0.829454 6.09065 1.34787L0.192608 13.5653C-0.127943 14.2293 0.355835 15 1.09316 15H14.9068C15.6441 15 16.1279 14.2293 15.8073 13.5653L9.90929 1.34788ZM8.74997 4.75V5.5V8V8.75H7.24997V8V5.5V4.75H8.74997ZM7.99997 12C8.55226 12 8.99997 11.5523 8.99997 11C8.99997 10.4477 8.55226 10 7.99997 10C7.44769 10 6.99997 10.4477 6.99997 11C6.99997 11.5523 7.44769 12 7.99997 12Z" fill="currentColor"></path></svg>';
+      const errorTop = document.createElement("div");
+      errorTop.style.display = "flex";
+      errorTop.style.justifyContent = "center";
+      const errorTitle = document.createElement("span");
+      const errorIcon = document.createElement("span");
+      errorIcon.style.marginRight = "8px";
+      errorIcon.innerHTML =
+        '<svg data-testid="geist-icon" height="16" stroke-linejoin="round" viewBox="0 0 16 16" style="color: currentcolor;"><path fill-rule="evenodd" clip-rule="evenodd" d="M8.55846 2H7.44148L1.88975 13.5H14.1102L8.55846 2ZM9.90929 1.34788C9.65902 0.829456 9.13413 0.5 8.55846 0.5H7.44148C6.86581 0.5 6.34092 0.829454 6.09065 1.34787L0.192608 13.5653C-0.127943 14.2293 0.355835 15 1.09316 15H14.9068C15.6441 15 16.1279 14.2293 15.8073 13.5653L9.90929 1.34788ZM8.74997 4.75V5.5V8V8.75H7.24997V8V5.5V4.75H8.74997ZM7.99997 12C8.55226 12 8.99997 11.5523 8.99997 11C8.99997 10.4477 8.55226 10 7.99997 10C7.44769 10 6.99997 10.4477 6.99997 11C6.99997 11.5523 7.44769 12 7.99997 12Z" fill="currentColor"></path></svg>';
 
-
-      const errorMessage = document.createElement('p');
+      const errorMessage = document.createElement("p");
       switch (status) {
         case 404:
-          errorTitle.textContent = 'Error: Not Found';
-          errorMessage.textContent = 'We cannot found the asset you are looking for.';
+          errorTitle.textContent = "Error: Not Found";
+          errorMessage.textContent =
+            "We cannot found the asset you are looking for.";
           break;
         case 501:
-          errorTitle.textContent = 'Error: Not Implemented';
+          errorTitle.textContent = "Error: Not Implemented";
           errorMessage.innerHTML = `The asset/collection is not yet implemented.<br><br><span style="font-family: var(--hx-font-mono)">asset-access-${status}-id-${src}</span>`;
           break;
         default:
-          errorTitle.textContent = 'Not Found';
+          errorTitle.textContent = "Not Found";
           break;
       }
       errorTop.appendChild(errorIcon);
@@ -703,15 +739,15 @@ private lastFocusedElement: HTMLElement | null = null;
 
   private showInfoPane(event: MouseEvent | FocusEvent, asset: Asset) {
     const target = event.currentTarget as HTMLElement;
-    const source = "/asset/grid/" + asset.id + ".png"
+    const source = "/asset/grid/" + asset.id + ".png";
     // Remove any existing info pane
-    const existingInfoPane = target.querySelector('.info-pane');
+    const existingInfoPane = target.querySelector(".info-pane");
     if (existingInfoPane) {
       existingInfoPane.remove();
     }
 
-    const infoPane = document.createElement('div');
-    infoPane.classList.add('info-pane');
+    const infoPane = document.createElement("div");
+    infoPane.classList.add("info-pane");
     infoPane.innerHTML = `
       <div id="info-pane-top">
         <span>${asset.resolution}</span>
@@ -728,15 +764,17 @@ private lastFocusedElement: HTMLElement | null = null;
     `;
 
     target.appendChild(infoPane);
-    requestAnimationFrame(() => infoPane.classList.add('visible'));
+    requestAnimationFrame(() => infoPane.classList.add("visible"));
   }
 
   private hideInfoPane(event: MouseEvent) {
     const target = event.currentTarget as HTMLElement;
-    const infoPane = target.querySelector('.info-pane');
+    const infoPane = target.querySelector(".info-pane");
     if (infoPane) {
-      infoPane.classList.remove('visible');
-      infoPane.addEventListener('transitionend', () => infoPane.remove(), { once: true });
+      infoPane.classList.remove("visible");
+      infoPane.addEventListener("transitionend", () => infoPane.remove(), {
+        once: true,
+      });
     }
   }
 
@@ -748,7 +786,7 @@ private lastFocusedElement: HTMLElement | null = null;
       setTimeout(() => this.handleHash(), 0);
       this.requestUpdate();
     } catch (error) {
-      console.error('Failed to initialize database:', error);
+      console.error("Failed to initialize database:", error);
       this.constructError(500);
     }
   }
@@ -757,59 +795,85 @@ private lastFocusedElement: HTMLElement | null = null;
     this.lazyLoadImages();
   }
 
-    render() {
-      const filteredAssets = this.getFilteredAssets();
-      this.collectionsCollector(filteredAssets);
+  render() {
+    const filteredAssets = this.getFilteredAssets();
+    this.collectionsCollector(filteredAssets);
 
-      if (this.assets.length > 0 && !this.collections[this.collectionRenderer]) {
-        this.collections[this.collectionRenderer] = [];
-      }
-  
-      if (!this.collections[this.collectionRenderer]) {
-        return html`
-        <div class="grid">
-          <div class="item"></div>
-          <div class="item"></div>
-          <div class="item"></div>
-          <div class="item"></div>
-          <div class="item"></div>
-          <div class="item"></div>
-        </div>`;
-      }
-  
-      return html`
-        <div class="grid">
-          ${this.collections[this.collectionRenderer].map((asset) => html`
-        <div class="item${asset.attributes ? " " + asset.attributes[0] : ""}" tabindex="0"
-             style="${!this.isSorting ? `view-transition-name: item-${asset.id}` : ''}"
-             @mouseenter="${(e: MouseEvent) => this.showInfoPane(e, asset)}"
-             @focus="${(e: FocusEvent) => this.showInfoPane(e, asset)}"
-             @blur="${this.hideInfoPane}"
-             @mouseleave="${this.hideInfoPane}"
-             @keydown="${(e: KeyboardEvent) => this.handleGridKeydown(e, asset)}">
-              <img data-src="/asset/grid/thumbnail/${asset.id}.webp" 
-                   aria-label="Custom Asset for ${asset.title} by ${asset.author}" 
-                   @click="${() => this.showOverlay(asset.id)}">
+    if (this.assets.length > 0 && !this.collections[this.collectionRenderer]) {
+      this.collections[this.collectionRenderer] = [];
+    }
+
+    if (!this.collections[this.collectionRenderer]) {
+      return html` <div class="grid">
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+        <div class="item"></div>
+      </div>`;
+    }
+
+    return html`
+      <div class="grid">
+        ${this.collections[this.collectionRenderer].map(
+          (asset) => html`
+            <div
+              class="item${asset.attributes ? " " + asset.attributes[0] : ""}"
+              tabindex="0"
+              style="${!this.isSorting
+                ? `view-transition-name: item-${asset.id}`
+                : ""}"
+              @mouseenter="${(e: MouseEvent) => this.showInfoPane(e, asset)}"
+              @focus="${(e: FocusEvent) => this.showInfoPane(e, asset)}"
+              @blur="${this.hideInfoPane}"
+              @mouseleave="${this.hideInfoPane}"
+              @keydown="${(e: KeyboardEvent) =>
+                this.handleGridKeydown(e, asset)}"
+            >
+              <img
+                data-src="/asset/grid/thumbnail/${asset.id}.webp"
+                aria-label="Custom Asset for ${asset.title} by ${asset.author}"
+                @click="${() => this.showOverlay(asset.id)}"
+              />
             </div>
-          `)}
-        </div>
-        <div class="overlay" @click="${this.hideOverlay}" tabindex="0"
-          @keydown="${(e: KeyboardEvent) => { if (e.key === 'Escape') this.hideOverlay(); }}">
-          <div class="content">
-            <img src="" alt="Zoomed Image">
-            <div class="skeleton"></div>
-            <div class="full-overlay">
-              <span id="overlay-grid-info"></span>
-              <a title="Download the asset" href="" tabindex="0" download>
-                <span>
-                  <svg height="24" stroke-linejoin="round" viewBox="0 0 16 16" width="24" style="color: currentcolor;">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M8.75 1V1.75V8.68934L10.7197 6.71967L11.25 6.18934L12.3107 7.25L11.7803 7.78033L8.70711 10.8536C8.31658 11.2441 7.68342 11.2441 7.29289 10.8536L4.21967 7.78033L3.68934 7.25L4.75 6.18934L5.28033 6.71967L7.25 8.68934V1.75V1H8.75ZM13.5 9.25V13.5H2.5V9.25V8.5H1V9.25V14C1 14.5523 1.44771 15 2 15H14C14.5523 15 15 14.5523 15 14V9.25V8.5H13.5V9.25Z" fill="currentColor"/>
-                  </svg>
-                </span>
-              </a>
-            </div>
+          `
+        )}
+      </div>
+      <div
+        class="overlay"
+        @click="${this.hideOverlay}"
+        tabindex="0"
+        @keydown="${(e: KeyboardEvent) => {
+          if (e.key === "Escape") this.hideOverlay();
+        }}"
+      >
+        <div class="content">
+          <img src="" alt="Zoomed Image" />
+          <div class="skeleton"></div>
+          <div class="full-overlay">
+            <span id="overlay-grid-info"></span>
+            <a title="Download the asset" href="" tabindex="0" download>
+              <span>
+                <svg
+                  height="24"
+                  stroke-linejoin="round"
+                  viewBox="0 0 16 16"
+                  width="24"
+                  style="color: currentcolor;"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    clip-rule="evenodd"
+                    d="M8.75 1V1.75V8.68934L10.7197 6.71967L11.25 6.18934L12.3107 7.25L11.7803 7.78033L8.70711 10.8536C8.31658 11.2441 7.68342 11.2441 7.29289 10.8536L4.21967 7.78033L3.68934 7.25L4.75 6.18934L5.28033 6.71967L7.25 8.68934V1.75V1H8.75ZM13.5 9.25V13.5H2.5V9.25V8.5H1V9.25V14C1 14.5523 1.44771 15 2 15H14C14.5523 15 15 14.5523 15 14V9.25V8.5H13.5V9.25Z"
+                    fill="currentColor"
+                  />
+                </svg>
+              </span>
+            </a>
           </div>
         </div>
-      `;
-    }
+      </div>
+    `;
+  }
 }

@@ -677,7 +677,9 @@ export class ToolbarComponent extends LitElement {
           <span
             >Resolution <br />
             <span class="selections">
-              ${this.selectedValues.resolution.length === 0 || this.selectedValues.resolution.length === this.resolutionOptions.length
+              ${this.selectedValues.resolution.length === 0 ||
+              this.selectedValues.resolution.length ===
+                this.resolutionOptions.length
                 ? "All"
                 : this.selectedValues.resolution.length + " selected"}
             </span>
@@ -751,7 +753,9 @@ export class ToolbarComponent extends LitElement {
           <span
             >Aspect Ratio <br />
             <span class="selections">
-              ${this.selectedValues.aspectRatio.length === 0 || this.selectedValues.aspectRatio.length === this.aspectRatioOptions.length
+              ${this.selectedValues.aspectRatio.length === 0 ||
+              this.selectedValues.aspectRatio.length ===
+                this.aspectRatioOptions.length
                 ? "All"
                 : this.selectedValues.aspectRatio}
             </span>
