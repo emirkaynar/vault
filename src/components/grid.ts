@@ -36,6 +36,10 @@ export class GridComponent extends LitElement {
   private dbService = new IndexedDbService();
   private collections: { [key: string]: Asset[] } = {};
   private imageObserver: IntersectionObserver | null = null;
+  private stackCountsById = new Map<number, number>();
+  private stackMembersByStackId = new Map<string, Asset[]>();
+  private stackSelectedByStackId = new Map<string, number>();
+  private stackFadeTokenByStackId = new Map<string, number>();
 
   // Create a stable reference for the event listener to ensure it can be removed
   private filterListener = (e: Event) =>
@@ -90,6 +94,26 @@ export class GridComponent extends LitElement {
     }
   }
 
+  private getStackId(asset: Asset): string | null {
+    for (const tag of asset.tags) {
+      if (tag.startsWith("stack:")) {
+        const id = tag.substring("stack:".length).trim();
+        return id.length > 0 ? id : null;
+      }
+    }
+    return null;
+  }
+
+  private pickStackRepresentative(members: Asset[]): Asset {
+    // Deterministic choice so the tile stays stable across renders.
+    // For `oldest` prefer the smallest id; otherwise prefer the newest.
+    const wantOldest = this.currentFilters.sortBy === "oldest";
+    return members.reduce((best, current) => {
+      if (wantOldest) return current.id < best.id ? current : best;
+      return current.id > best.id ? current : best;
+    }, members[0]);
+  }
+
   private getFilteredAssets(): Asset[] {
     let filtered = [...this.assets];
 
@@ -121,8 +145,49 @@ export class GridComponent extends LitElement {
       });
     }
 
-    // Sort
-    filtered.sort((a, b) => {
+    // Collapse stacks (assets that share the same `stack:<id>` tag)
+    // into a single representative tile.
+    const singles: Asset[] = [];
+    const stackGroups = new Map<string, Asset[]>();
+
+    for (const asset of filtered) {
+      const stackId = this.getStackId(asset);
+      if (!stackId) {
+        singles.push(asset);
+        continue;
+      }
+      const group = stackGroups.get(stackId);
+      if (group) group.push(asset);
+      else stackGroups.set(stackId, [asset]);
+    }
+
+    const collapsed: Asset[] = [];
+    this.stackCountsById.clear();
+    this.stackMembersByStackId.clear();
+
+    for (const asset of singles) {
+      collapsed.push(asset);
+      this.stackCountsById.set(asset.id, 1);
+    }
+
+    for (const [stackId, members] of stackGroups.entries()) {
+      const sortedMembers = [...members].sort((a, b) => b.id - a.id);
+      this.stackMembersByStackId.set(stackId, sortedMembers);
+
+      const preferredId = this.stackSelectedByStackId.get(stackId);
+      const preferred =
+        preferredId !== undefined
+          ? sortedMembers.find((m) => m.id === preferredId)
+          : undefined;
+
+      const displayAsset =
+        preferred ?? this.pickStackRepresentative(sortedMembers);
+      collapsed.push(displayAsset);
+      this.stackCountsById.set(displayAsset.id, sortedMembers.length);
+    }
+
+    // Sort representatives
+    collapsed.sort((a, b) => {
       switch (this.currentFilters.sortBy) {
         case "newest":
           return b.id - a.id;
@@ -137,7 +202,7 @@ export class GridComponent extends LitElement {
       }
     });
 
-    return filtered;
+    return collapsed;
   }
 
   static styles = css`
@@ -160,12 +225,97 @@ export class GridComponent extends LitElement {
       display: flex;
       flex-direction: column;
       justify-content: center;
+      position: relative;
       aspect-ratio: 2/3;
       background-color: var(--hx-background-alpha-100);
       -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px);
       border: 1px solid var(--hx-border-100);
       border-radius: 12px;
+    }
+
+    .stack-badge {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      font-size: 0.8rem;
+      padding: 4px;
+      border-radius: 6px;
+      color: var(--hx-text-100);
+      background-color: var(--hx-background-alpha-200);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      border: 1px solid var(--hx-border-200);
+      line-height: 1;
+      opacity: 1;
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+      z-index: 9;
+    }
+
+    .item:hover .stack-badge,
+    .item:focus .stack-badge,
+    .item:focus-within .stack-badge {
+      opacity: 0;
+    }
+
+    .stack-tabs {
+      position: absolute;
+      right: 1rem;
+      bottom: 0;
+      display: flex;
+      border-radius: 8px 8px 0 0;
+      flex-direction: row;
+      justify-content: flex-start;
+      opacity: 0;
+      background-color: var(--hx-background-alpha-200);
+      backdrop-filter: blur(4px) opacity(0.6);
+      -webkit-backdrop-filter: blur(4px) opacity(0.6);
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+      z-index: 12;
+    }
+
+    .item:hover .stack-tabs,
+    .item:focus .stack-tabs,
+    .item:focus-within .stack-tabs {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .stack-tab {
+      appearance: none;
+      border: 1px solid transparent;
+      border-bottom: none;
+      border-radius: 8px 8px 0 0;
+      background-color: transparent;
+      color: var(--hx-text-100);
+      font-size: 0.8rem;
+      line-height: 0.8;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      pointer-events: auto;
+      user-select: none;
+      font-family: var(--hx-font-mono);
+      font-weight: 700;
+      transition: all 0.2s ease;
+    }
+
+    .stack-tab-label {
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .stack-tab:not(.active) {
+      opacity: 0.2;
+    }
+    .stack-tab.active {
+      border-color: var(--hx-border-100);
+      background-color: var(--hx-background-100);
+      transform: translateY(1px) scaleY(1.05);
     }
     .item.horizontal img {
       border-radius: 0px;
@@ -484,6 +634,7 @@ export class GridComponent extends LitElement {
   } as const;
 
   private readonly ANIMATION_DURATION = 2000;
+  private readonly STACK_TAB_FADE_MS = 120;
 
   private showOverlay(src: number, sourceElement?: Element | null) {
     // Cache DOM queries
@@ -623,6 +774,13 @@ export class GridComponent extends LitElement {
   private handleGridKeydown(e: KeyboardEvent, asset: Asset) {
     const target = e.target as HTMLElement;
 
+    // When focus is inside the stack tab controls, don't let the tile-level
+    // keyboard shortcuts (Enter opens overlay, arrow keys move between tiles)
+    // interfere.
+    if (target.closest(".stack-tabs")) {
+      return;
+    }
+
     switch (e.key) {
       case "Enter":
         this.showOverlay(asset.id, e.target as HTMLElement);
@@ -739,6 +897,10 @@ export class GridComponent extends LitElement {
 
   private showInfoPane(event: MouseEvent | FocusEvent, asset: Asset) {
     const target = event.currentTarget as HTMLElement;
+    this.updateInfoPane(target, asset);
+  }
+
+  private updateInfoPane(target: HTMLElement, asset: Asset) {
     const source = "/asset/grid/" + asset.id + ".png";
     // Remove any existing info pane
     const existingInfoPane = target.querySelector(".info-pane");
@@ -765,6 +927,70 @@ export class GridComponent extends LitElement {
 
     target.appendChild(infoPane);
     requestAnimationFrame(() => infoPane.classList.add("visible"));
+  }
+
+  private onStackTabClick(e: Event, stackId: string, assetId: number) {
+    e.stopPropagation();
+    const members = this.stackMembersByStackId.get(stackId);
+    if (!members) return;
+    const selected = members.find((m) => m.id === assetId);
+    if (!selected) return;
+
+    const currentSelectedId = this.stackSelectedByStackId.get(stackId);
+    // If we've already selected this member, don't do anything.
+    if (currentSelectedId === assetId) return;
+
+    // Token-based cancellation: if the user switches variants rapidly,
+    // only the latest click should complete.
+    const nextToken = (this.stackFadeTokenByStackId.get(stackId) ?? 0) + 1;
+    this.stackFadeTokenByStackId.set(stackId, nextToken);
+
+    const tile = (e.currentTarget as HTMLElement | null)?.closest(
+      ".item"
+    ) as HTMLElement | null;
+
+    // Fade out the current image before swapping variants.
+    const currentImg = tile?.querySelector("img") as HTMLImageElement | null;
+    if (currentImg) {
+      currentImg.style.transition = `opacity ${this.STACK_TAB_FADE_MS}ms ease`;
+      currentImg.style.opacity = "0";
+    }
+
+    window.setTimeout(async () => {
+      if (this.stackFadeTokenByStackId.get(stackId) !== nextToken) return;
+
+      this.stackSelectedByStackId.set(stackId, assetId);
+      this.requestUpdate();
+      await this.updateComplete;
+
+      if (this.stackFadeTokenByStackId.get(stackId) !== nextToken) return;
+
+      const newTile = this.shadowRoot?.querySelector(
+        `.item[data-stack-id="${CSS.escape(stackId)}"]`
+      ) as HTMLElement | null;
+
+      const newImg = newTile?.querySelector("img") as HTMLImageElement | null;
+      if (newImg) {
+        newImg.style.transition = `opacity ${this.STACK_TAB_FADE_MS}ms ease`;
+        newImg.style.opacity = "0";
+        requestAnimationFrame(() => {
+          if (this.stackFadeTokenByStackId.get(stackId) !== nextToken) return;
+          newImg.style.opacity = "1";
+        });
+      }
+    }, this.STACK_TAB_FADE_MS);
+
+    // Keep the info pane in sync immediately (before the re-render swaps the tile).
+    if (tile) {
+      this.updateInfoPane(tile, selected);
+    }
+
+    // If this click came from a pointer (mouse) interaction, don't keep focus
+    // on the button. Otherwise `.item:focus-within` keeps the stack tabs visible
+    // even after the pointer leaves the tile.
+    if (e instanceof MouseEvent && e.detail > 0) {
+      (e.currentTarget as HTMLElement | null)?.blur();
+    }
   }
 
   private hideInfoPane(event: MouseEvent) {
@@ -816,10 +1042,17 @@ export class GridComponent extends LitElement {
 
     return html`
       <div class="grid">
-        ${this.collections[this.collectionRenderer].map(
-          (asset) => html`
+        ${this.collections[this.collectionRenderer].map((asset) => {
+          const stackId = this.getStackId(asset);
+          const stackMembers = stackId
+            ? this.stackMembersByStackId.get(stackId)
+            : undefined;
+          const stackCount = this.stackCountsById.get(asset.id) ?? 1;
+          const extraCount = Math.max(0, stackCount - 1);
+          return html`
             <div
               class="item${asset.attributes ? " " + asset.attributes[0] : ""}"
+              data-stack-id=${stackId ?? ""}
               tabindex="0"
               style="${!this.isSorting
                 ? `view-transition-name: item-${asset.id}`
@@ -831,14 +1064,46 @@ export class GridComponent extends LitElement {
               @keydown="${(e: KeyboardEvent) =>
                 this.handleGridKeydown(e, asset)}"
             >
+              ${extraCount > 0
+                ? html`<span class="stack-badge">+${extraCount}</span>`
+                : null}
+              ${stackId && stackMembers && stackMembers.length > 1
+                ? html`
+                    <div class="stack-tabs" aria-label="Stack variants">
+                      ${stackMembers.map((member, idx) => {
+                        const label = String(idx + 1);
+                        return html`
+                          <button
+                            type="button"
+                            class="stack-tab ${member.id === asset.id
+                              ? "active"
+                              : ""}"
+                            @mousedown=${(e: MouseEvent) => e.preventDefault()}
+                            @keydown=${(e: KeyboardEvent) => {
+                              // Prevent Enter/Space from bubbling to the tile's
+                              // `@keydown` handler (which would open the overlay).
+                              if (e.key === "Enter" || e.key === " ") {
+                                e.stopPropagation();
+                              }
+                            }}
+                            @click=${(e: Event) =>
+                              this.onStackTabClick(e, stackId, member.id)}
+                          >
+                            <span class="stack-tab-label">${label}</span>
+                          </button>
+                        `;
+                      })}
+                    </div>
+                  `
+                : null}
               <img
                 data-src="/asset/grid/thumbnail/${asset.id}.webp"
                 aria-label="Custom Asset for ${asset.title} by ${asset.author}"
                 @click="${() => this.showOverlay(asset.id)}"
               />
             </div>
-          `
-        )}
+          `;
+        })}
       </div>
       <div
         class="overlay"
