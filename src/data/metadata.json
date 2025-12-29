@@ -67,6 +67,7 @@
     "resolution": "1843x2763",
     "tags": [
       "stack:starfield-2023-theema:s1",
+      "stack-color:#d49e48",
       "yellow"
     ]
   },
@@ -78,6 +79,7 @@
     "resolution": "1843x2763",
     "tags": [
       "stack:starfield-2023-theema:s1",
+      "stack-color:#3d254d",
       "purple"
     ]
   },
@@ -89,6 +91,7 @@
     "resolution": "1843x2763",
     "tags": [
       "stack:starfield-2023-theema:s1",
+      "stack-color:#c02f44",
       "red"
     ]
   },
@@ -219,7 +222,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-11-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -229,7 +234,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-10-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -239,7 +246,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-9-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -249,7 +258,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-8-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -259,7 +270,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-7-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -269,7 +282,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-6-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -279,7 +294,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-5-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -289,7 +306,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-4-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -299,7 +318,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-3-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -309,7 +330,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-2-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -319,7 +342,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-1-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -329,7 +354,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-10-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -339,7 +366,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-9-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -349,7 +378,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-8-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -359,7 +390,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-7-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -369,7 +402,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-6-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -379,7 +414,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-5-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -389,7 +426,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-4-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -399,7 +438,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-3-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -409,7 +450,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-2-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -419,7 +462,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-1-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -429,7 +474,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-atom-5-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -439,7 +486,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-atom-4-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -449,7 +498,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-atom-3-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -459,7 +510,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-atom-2-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -469,7 +522,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-atom-1-2020-moofy:s1",
+      "stack-name:New"
     ]
   },
   {
@@ -479,7 +534,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-atom-5-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -499,11 +556,23 @@
     "author": "Moofy",
     "resolution": "1920x2880",
     "tags": [
-      "stack-color:#14cbb7"
+      "green"
     ]
   },
   {
     "id": 68,
+    "title": "Back 4 Blood",
+    "release": "2021",
+    "author": "Moofy",
+    "resolution": "1200x1800",
+    "tags": [
+      "stack:back-4-blood-2021-moofy:s1",
+      "stack-name:2:3",
+      "red"
+    ]
+  },
+  {
+    "id": 67,
     "title": "Back 4 Blood",
     "release": "2021",
     "author": "Moofy",
@@ -513,18 +582,7 @@
     ],
     "tags": [
       "stack:back-4-blood-2021-moofy:s1",
-      "stack-name:"
-    ]
-  },
-  {
-    "id": 67,
-    "title": "Back 4 Blood",
-    "release": "2021",
-    "author": "Moofy",
-    "resolution": "1200x1800",
-    "tags": [
-      "stack:back-4-blood-2021-moofy:s1",
-      "red"
+      "stack-name:92:43"
     ]
   },
   {
@@ -544,7 +602,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-11-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -554,7 +614,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-10-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -564,7 +626,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-9-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -574,7 +638,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-8-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -584,7 +650,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-7-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -594,7 +662,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-6-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -604,7 +674,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-5-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -614,7 +686,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-4-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -624,7 +698,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-3-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -634,7 +710,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-2-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -644,7 +722,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-test-tube-1-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -654,7 +734,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-10-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -664,7 +746,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-9-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -674,7 +758,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-8-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -684,7 +770,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-7-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -694,7 +782,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-6-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -704,7 +794,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-5-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -714,7 +806,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-4-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -724,7 +818,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-3-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -734,7 +830,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-2-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -744,7 +842,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-1-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -754,7 +854,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-atom-4-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -764,7 +866,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-atom-3-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -774,7 +878,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-atom-2-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -784,7 +890,9 @@
     "author": "Moofy",
     "resolution": "1200x1800",
     "tags": [
-      "collection:maplabs"
+      "collection:maplabs",
+      "stack:maplabs-atom-1-2020-moofy:s1",
+      "stack-name:Old"
     ]
   },
   {
@@ -941,7 +1049,7 @@
     "resolution": "1200x1800",
     "tags": [
       "stack:overwolf-2021-moofy:s1",
-      "black"
+      "stack-color:#000000"
     ]
   },
   {
@@ -952,7 +1060,7 @@
     "resolution": "1200x1800",
     "tags": [
       "stack:overwolf-2021-moofy:s1",
-      "navy"
+      "stack-color:#1c192a"
     ]
   },
   {

@@ -105,11 +105,8 @@ export class GridComponent extends LitElement {
   }
 
   private pickStackRepresentative(members: Asset[]): Asset {
-    // Deterministic choice so the tile stays stable across renders.
-    // For `oldest` prefer the smallest id; otherwise prefer the newest.
-    const wantOldest = this.currentFilters.sortBy === "oldest";
+    // Always show the newest (largest id) representative for stacks.
     return members.reduce((best, current) => {
-      if (wantOldest) return current.id < best.id ? current : best;
       return current.id > best.id ? current : best;
     }, members[0]);
   }
@@ -174,16 +171,11 @@ export class GridComponent extends LitElement {
       const sortedMembers = [...members].sort((a, b) => b.id - a.id);
       this.stackMembersByStackId.set(stackId, sortedMembers);
 
-      const preferredId = this.stackSelectedByStackId.get(stackId);
-      const preferred =
-        preferredId !== undefined
-          ? sortedMembers.find((m) => m.id === preferredId)
-          : undefined;
-
-      const displayAsset =
-        preferred ?? this.pickStackRepresentative(sortedMembers);
-      collapsed.push(displayAsset);
-      this.stackCountsById.set(displayAsset.id, sortedMembers.length);
+      // Keep the stack's tile (and therefore its sort position) anchored to a
+      // stable representative. The selected variant is rendered inside the tile.
+      const representative = this.pickStackRepresentative(sortedMembers);
+      collapsed.push(representative);
+      this.stackCountsById.set(representative.id, sortedMembers.length);
     }
 
     // Sort representatives
@@ -239,7 +231,9 @@ export class GridComponent extends LitElement {
       top: 0.5rem;
       right: 0.5rem;
       font-size: 0.8rem;
-      padding: 4px;
+      font-family: var(--hx-font-mono);
+      font-weight: 700;
+      padding: 4px 6px;
       border-radius: 6px;
       color: var(--hx-text-100);
       background-color: var(--hx-background-alpha-200);
@@ -291,8 +285,9 @@ export class GridComponent extends LitElement {
       background-color: transparent;
       color: var(--hx-text-100);
       font-size: 0.8rem;
-      line-height: 0.8;
-      padding: 8px 12px;
+      line-height: 1;
+      min-width: 2rem;
+      height: 1.625rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -304,14 +299,23 @@ export class GridComponent extends LitElement {
       transition: all 0.2s ease;
     }
 
+    .stack-tab-swatch {
+      width: 0.8rem;
+      height: 0.8rem;
+      border-radius: 99px;
+      border: 1px solid var(--hx-border-300);
+    }
+
     .stack-tab-label {
       display: inline-block;
       white-space: nowrap;
+      padding: 0 0.25rem;
     }
 
     .stack-tab:not(.active) {
-      opacity: 0.2;
+      opacity: 0.4;
     }
+
     .stack-tab.active {
       border-color: var(--hx-border-100);
       background-color: var(--hx-background-100);
@@ -993,6 +997,16 @@ export class GridComponent extends LitElement {
     }
   }
 
+  private getStackTagValue(
+    asset: Asset,
+    prefix: "stack-name:" | "stack-color:"
+  ): string | null {
+    const tag = asset.tags.find((t) => t.startsWith(prefix));
+    if (!tag) return null;
+    const value = tag.slice(prefix.length).trim();
+    return value.length > 0 ? value : null;
+  }
+
   private hideInfoPane(event: MouseEvent) {
     const target = event.currentTarget as HTMLElement;
     const infoPane = target.querySelector(".info-pane");
@@ -1047,22 +1061,35 @@ export class GridComponent extends LitElement {
           const stackMembers = stackId
             ? this.stackMembersByStackId.get(stackId)
             : undefined;
+
+          const selectedId = stackId
+            ? this.stackSelectedByStackId.get(stackId)
+            : undefined;
+          const selectedAsset =
+            selectedId !== undefined
+              ? stackMembers?.find((m) => m.id === selectedId)
+              : undefined;
+          const displayAsset = selectedAsset ?? asset;
+
           const stackCount = this.stackCountsById.get(asset.id) ?? 1;
           const extraCount = Math.max(0, stackCount - 1);
           return html`
             <div
-              class="item${asset.attributes ? " " + asset.attributes[0] : ""}"
+              class="item${displayAsset.attributes
+                ? " " + displayAsset.attributes[0]
+                : ""}"
               data-stack-id=${stackId ?? ""}
               tabindex="0"
               style="${!this.isSorting
                 ? `view-transition-name: item-${asset.id}`
                 : ""}"
-              @mouseenter="${(e: MouseEvent) => this.showInfoPane(e, asset)}"
-              @focus="${(e: FocusEvent) => this.showInfoPane(e, asset)}"
+              @mouseenter="${(e: MouseEvent) =>
+                this.showInfoPane(e, displayAsset)}"
+              @focus="${(e: FocusEvent) => this.showInfoPane(e, displayAsset)}"
               @blur="${this.hideInfoPane}"
               @mouseleave="${this.hideInfoPane}"
               @keydown="${(e: KeyboardEvent) =>
-                this.handleGridKeydown(e, asset)}"
+                this.handleGridKeydown(e, displayAsset)}"
             >
               ${extraCount > 0
                 ? html`<span class="stack-badge">+${extraCount}</span>`
@@ -1071,11 +1098,25 @@ export class GridComponent extends LitElement {
                 ? html`
                     <div class="stack-tabs" aria-label="Stack variants">
                       ${stackMembers.map((member, idx) => {
-                        const label = String(idx + 1);
+                        const numericLabel = String(idx + 1);
+                        const stackName = this.getStackTagValue(
+                          member,
+                          "stack-name:"
+                        );
+                        const stackColor = this.getStackTagValue(
+                          member,
+                          "stack-color:"
+                        );
+                        const ariaLabel = stackName
+                          ? stackName
+                          : stackColor
+                          ? `Variant ${numericLabel} (${stackColor})`
+                          : `Variant ${numericLabel}`;
+                        const title = stackName ?? stackColor ?? numericLabel;
                         return html`
                           <button
                             type="button"
-                            class="stack-tab ${member.id === asset.id
+                            class="stack-tab ${member.id === displayAsset.id
                               ? "active"
                               : ""}"
                             @mousedown=${(e: MouseEvent) => e.preventDefault()}
@@ -1086,10 +1127,19 @@ export class GridComponent extends LitElement {
                                 e.stopPropagation();
                               }
                             }}
+                            aria-label=${ariaLabel}
+                            title=${title}
                             @click=${(e: Event) =>
                               this.onStackTabClick(e, stackId, member.id)}
                           >
-                            <span class="stack-tab-label">${label}</span>
+                            ${stackColor
+                              ? html`<span
+                                  class="stack-tab-swatch"
+                                  style=${`background-color: ${stackColor};`}
+                                ></span>`
+                              : html`<span class="stack-tab-label"
+                                  >${stackName ?? numericLabel}</span
+                                >`}
                           </button>
                         `;
                       })}
@@ -1097,9 +1147,9 @@ export class GridComponent extends LitElement {
                   `
                 : null}
               <img
-                data-src="/asset/grid/thumbnail/${asset.id}.webp"
-                aria-label="Custom Asset for ${asset.title} by ${asset.author}"
-                @click="${() => this.showOverlay(asset.id)}"
+                data-src="/asset/grid/thumbnail/${displayAsset.id}.webp"
+                aria-label="Custom Asset for ${displayAsset.title} by ${displayAsset.author}"
+                @click="${() => this.showOverlay(displayAsset.id)}"
               />
             </div>
           `;
