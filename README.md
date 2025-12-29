@@ -31,7 +31,7 @@ To run the application locally, use the following command:
 bun run dev
 ```
 
-This will start a development server at `http://localhost:8080`.
+This will start a development server at `http://localhost:25420`.
 
 ## Development
 
